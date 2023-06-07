@@ -4,7 +4,6 @@
 # CAP4630
 # 6/6/2023
 
-
 import math
 
 user = 'X'          # Setting the user to be the 'X' player
@@ -32,7 +31,6 @@ def makeMove(player, move, board):      # Function used to add a move to the boa
     if draw(board):                     # Checking to see if there is a draw with the new board
         print('\n' + 'The game has ended in a draw.')   # Outputting a draw and ending the game
         return
-
 
 
 def winner(board):      # Function used to check if there are any winners with the current board
@@ -113,7 +111,6 @@ def computerMove(board):        # Function used to allow the AI to make a move o
     makeMove(computer, bestMove, board)     # Make the AI's move using the best possible move from MINMAX
 
 
-
 def MINMAX(board, min_or_max, alpha, beta):        # Function used to perform MinMax Algorithm
     if findWinner(board, computer):     # If the computer wins in the potential game (good)
         return 1
@@ -185,10 +182,13 @@ def main():
 
         while not win and not tie:                 # While loop that runs until there is a winner or draw
             print('\n')
-            userMove(board)         # User goes first, then the AI
-            computerMove(board)
-            win = winner(board)     # Flag for winner
-            tie = draw(board)       # Flag for draw
+            userMove(board)                         # User goes first, then the AI
+            win = winner(board)                     # Flag for winner
+            tie = draw(board)                       # Flag for draw
+            if not win and not tie:
+                computerMove(board)
+            win = winner(board)                     # Flag for winner
+            tie = draw(board)                       # Flag for draw
         playAgain = input('\nEnter Y if you would like to play again and anything else to exit: ')
 
 
