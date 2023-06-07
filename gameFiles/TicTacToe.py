@@ -1,3 +1,10 @@
+# Dawson Merkle
+# Project 1: Tic-Tac-Toe
+# Implementing the MINMAX Adversarial Search Algorithm
+# CAP4630
+# 6/6/2023
+
+
 import math
 
 user = 'X'          # Setting the user to be the 'X' player
