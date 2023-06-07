@@ -1,10 +1,4 @@
-# Necessary Functions
-
-# Output board
-# MinMax Function
-# Game State function
-# Check if winner
-
+import math
 
 user = 'X'          # Setting the user to be the 'X' player
 computer = 'O'      # Setting the AI to be the 'O' player
@@ -27,10 +21,11 @@ def makeMove(player, move, board):      # Function used to add a move to the boa
     printBoard(board)                   # Printing the board after a new move
     if winner(board):                   # Checking to see if there is a winner with the new board
         print('\n' + player + ' has won the game.')     # Outputting the winner and ending the game
-        exit()
+        return
     if draw(board):                     # Checking to see if there is a draw with the new board
         print('\n' + 'The game has ended in a draw.')   # Outputting a draw and ending the game
-        exit()
+        return
+
 
 
 def winner(board):      # Function used to check if there are any winners with the current board
@@ -97,12 +92,12 @@ def draw(board):                # Function used to check if there is a draw
 
 
 def computerMove(board):        # Function used to allow the AI to make a move on the board
-    bestScore = -800
+    bestScore = -math.inf
     bestMove = 0
     for z in range(9):          # Iterate through all the empty slots on the board
         if board[z] == ' ':     # If empty space then set it to the computer's letter so that we can find the score
             board[z] = computer
-            score = MINMAX(board, False)        # Get the score for that potential move
+            score = MINMAX(board, False, -math.inf, math.inf)        # Get the score for that potential move
             board[z] = ' '      # Undo the move so that we can try next potential move
             if score > bestScore:       # If the new score is better than we will make that move
                 bestScore = score
@@ -111,7 +106,8 @@ def computerMove(board):        # Function used to allow the AI to make a move o
     makeMove(computer, bestMove, board)     # Make the AI's move using the best possible move from MINMAX
 
 
-def MINMAX(board, min_or_max):        # Function used to perform MinMax Algorithm
+
+def MINMAX(board, min_or_max, alpha, beta):        # Function used to perform MinMax Algorithm
     if findWinner(board, computer):     # If the computer wins in the potential game (good)
         return 1
     elif findWinner(board, user):       # If the user wins in the potential game (bad)
@@ -120,24 +116,32 @@ def MINMAX(board, min_or_max):        # Function used to perform MinMax Algorith
         return 0
 
     if min_or_max:                              # Maximizing player
-        bestScore = -800
+        bestScore = -math.inf
         for z in range(9):                      # Loop through the board
             if board[z] == ' ':                 # If empty space
                 board[z] = computer             # Put a O
-                score = MINMAX(board, False)    # Recursive call with the new potential board
+                score = MINMAX(board, False, alpha, beta)    # Recursive call with the new potential board
                 board[z] = ' '                  # Undo the move
                 if score > bestScore:           # If the new score is better than the best score make that move
                     bestScore = score
+                    if bestScore >= alpha:      # Tree pruning
+                        alpha = bestScore
+            if alpha >= beta:
+                break
         return bestScore
     else:                                       # Minimizing player
-        bestScore = 800
+        bestScore = math.inf
         for z in range(9):                      # Loop through the board
             if board[z] == ' ':                 # If empty space
                 board[z] = user                 # Put a X
-                score = MINMAX(board, True)     # Recursive call with the new potential board
+                score = MINMAX(board, True, alpha, beta)     # Recursive call with the new potential board
                 board[z] = ' '                  # Undo the move
                 if score < bestScore:           # If the new score is better than the best score make that move
                     bestScore = score
+                    if bestScore <= beta:       # Tree pruning
+                        beta = bestScore
+            if alpha >= beta:
+                break
         return bestScore
 
 
@@ -158,14 +162,28 @@ def userMove(board):        # Function used to allow the user to make a move on 
     makeMove(user, move_index, board)               # Make the move with the input given after validation
 
 
-if __name__ == '__main__':
-    board = []              # Initialization of empty board to be used
-    for x in range(9):
-        board.append(' ')
+def main():
 
-    print("Welcome to TicTacToe! You are player 'X'")       # Welcome message for user
-    printStartingBoard()        # Printing the starting board for the user to use
-    while True:                 # While loop that runs until there is a winner or draw
-        print('\n')
-        userMove(board)         # User goes first, then the AI
-        computerMove(board)
+    playAgain = "Y"
+    while playAgain == "Y" or playAgain == "y":     # While the player wants to play again
+
+        win = False
+        tie = False
+        board = []  # Initialization of empty board to be used
+        for x in range(9):
+            board.append(' ')
+
+        print("\nWelcome to TicTacToe! You are player 'X'")  # Welcome message for user
+        printStartingBoard()  # Printing the starting board for the user to use
+
+        while not win and not tie:                 # While loop that runs until there is a winner or draw
+            print('\n')
+            userMove(board)         # User goes first, then the AI
+            computerMove(board)
+            win = winner(board)     # Flag for winner
+            tie = draw(board)       # Flag for draw
+        playAgain = input('\nEnter Y if you would like to play again and anything else to exit: ')
+
+
+if __name__ == '__main__':
+    main()
